@@ -37,8 +37,13 @@ func minEmber(capacities []int, targetWater int) string {
 	for i := len(capacities) - 1; i >= 0; i-- {
 		capacity := capacities[i]
 
+		previousCapacity := 0
+		if i > 0 {
+			previousCapacity = capacities[i-1]
+		}
+
 		// Fill the bucket as much as possible
-		for targetWater >= capacity {
+		for targetWater >= capacity && targetWater > previousCapacity {
 			emberCount[capacity]++
 			targetWater -= capacity
 		}
@@ -46,7 +51,7 @@ func minEmber(capacities []int, targetWater int) string {
 
 	// Add the remaining water to the smallest bucket
 	if targetWater > 0 {
-		emberCount[capacities[0]] += targetWater
+		emberCount[capacities[0]]++
 	}
 
 	// Create the result string
@@ -65,7 +70,9 @@ func minEmber(capacities []int, targetWater int) string {
 }
 
 func main() {
-	capacities := []int{5, 7, 11}
+	capacities := []int{5, 7, 4}
+	// 14 * 7 = 98
+
 	targetWater := 100
 	totalEmber := minEmber(capacities, targetWater)
 	fmt.Println(totalEmber)
