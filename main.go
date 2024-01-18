@@ -19,47 +19,41 @@ import (
 // Jawaban: Ember 3 = 9 buah, Ember 1 = 1 buah, Ember 2 = 0 buah, total = 10 buah
 // atau Ember 3 = 9 buah, Ember 1 = 0 buah, Ember 2 = 1 buah, total = 10 buah
 
-// example: $capacities = [11, 7, 2]; $targetWater = 100;
-
 func minEmber(capacities []int, targetWater int) string {
 	bucketSequence := make(map[int]int)
 	emberCount := make(map[int]int)
 
 	for i, capacity := range capacities {
-		bucketSequence[capacity] = i + 1 // i want to start from 1
+		bucketSequence[capacity] = i + 1 // Start from 1
 		emberCount[capacity] = 0
 	}
 
-	// mengurutkan slice dari yang terkecil ke terbesar
+	// Sort capacities in ascending order
 	slices.Sort(capacities)
 
-	highestCapacity := capacities[len(capacities)-1]
-	secondHighestCapacity := capacities[len(capacities)-2]
-	lowestCapacity := capacities[0]
-
-	// range more than secondHighestCapacity
-	for targetWater > secondHighestCapacity {
-		emberCount[highestCapacity]++
-		targetWater -= highestCapacity
-	}
-
-	// range more than lowestCapacity
-	for targetWater > lowestCapacity {
-		emberCount[secondHighestCapacity]++
-		targetWater -= secondHighestCapacity
-	}
-
-	// range more than 0
-	for targetWater > 0 {
-		emberCount[lowestCapacity]++
-		targetWater -= lowestCapacity
-	}
-
-	// show from the highest capacity
 	answers := make([]string, 0)
+
+	// Iterate through capacities in descending order
+	for i := len(capacities) - 1; i >= 0; i-- {
+		capacity := capacities[i]
+
+		// Fill the bucket as much as possible
+		for targetWater >= capacity {
+			emberCount[capacity]++
+			targetWater -= capacity
+		}
+	}
+
+	// Add the remaining water to the smallest bucket
+	if targetWater > 0 {
+		emberCount[capacities[0]] += targetWater
+	}
+
+	// Create the result string
 	for i := len(capacities) - 1; i >= 0; i-- {
 		capacity := capacities[i]
 		value := emberCount[capacity]
+
 		if value <= 1 {
 			answers = append(answers, fmt.Sprintf("Bottle %d = %d bottle", bucketSequence[capacity], value))
 		} else {
@@ -72,9 +66,7 @@ func minEmber(capacities []int, targetWater int) string {
 
 func main() {
 	capacities := []int{5, 7, 11}
-	targetWater := 150
-	// Bootle 3 = 13, 13 * 11 = 143, 150 - 143 = sisa 7
-	// Bootle 2 = 1, 1 * 7 = 7, 7 - 7 = sisa 0
+	targetWater := 100
 	totalEmber := minEmber(capacities, targetWater)
 	fmt.Println(totalEmber)
 }
